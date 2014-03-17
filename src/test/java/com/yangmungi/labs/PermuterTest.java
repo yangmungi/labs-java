@@ -32,7 +32,7 @@ public class PermuterTest
      * Rigorous Test :-)
      */
     public void testApp() {
-        int targetSize = 7;
+        int targetSize = 8;
         ArrayList<Integer> source = new ArrayList<Integer>(targetSize);
         for (int i = 1; i <= targetSize; i++) {
             source.add(i);

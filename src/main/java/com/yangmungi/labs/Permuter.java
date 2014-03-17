@@ -44,10 +44,10 @@ public class Permuter {
     
     private Builder<Collection<List>> collectionOfListBuilder;
     
-    // This list should have supremely optimal add()
+    // Uses addAll
     private Builder<List> writeListBuilder;
     
-    // This list should have supremely optimal subList()     
+    // Uses addAll and subList    
     private Builder<List> readListBuilder;
     
     public void setWriteListBuilder(Builder<List> builder) {
@@ -99,11 +99,10 @@ public class Permuter {
      *  the objects from Collection origin
      */
     public void execute() {
-        if (this.collection == null) {
+        Collection resultant = this.getCollection();
+        if (resultant == null) {
             throw new IllegalStateException("Collection not provided");
         }         
-        
-        Collection resultant = this.collection;
         
         // Only needed for the interface?
         List originList = this.buildReadList();
@@ -116,6 +115,7 @@ public class Permuter {
 
         for (int i = 0; i < originListSize; i++) {            
             newSubList = this.buildWriteList();
+            
             if (i > 0) {
                 newSubList.addAll(originList.subList(0, i));
             }
@@ -125,11 +125,6 @@ public class Permuter {
             }
 
             Permuter recursive = this.buildPermuter(newSubList);
-            
-            recursive.setCollectionOfListBuilder(this.getCollectionOfListBuilder());
-            recursive.setCollection(this.buildCollection());
-            recursive.setReadListBuilder(this.getReadListBuilder());
-            recursive.setWriteListBuilder(this.getWriteListBuilder());
             
             recursive.execute();
             
@@ -147,7 +142,14 @@ public class Permuter {
     }
     
     protected Permuter buildPermuter(Collection collection) {
-        return new Permuter(collection);
+        Permuter recursive = new Permuter(collection);
+        
+        recursive.setCollectionOfListBuilder(this.getCollectionOfListBuilder());
+        recursive.setCollection(this.buildCollection());
+        recursive.setReadListBuilder(this.getReadListBuilder());
+        recursive.setWriteListBuilder(this.getWriteListBuilder());
+            
+        return recursive;
     }
     
     private Collection<List> buildCollection() {
