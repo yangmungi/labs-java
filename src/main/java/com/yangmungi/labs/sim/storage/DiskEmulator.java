@@ -10,40 +10,39 @@ public class DiskEmulator {
     /**
      * Represents how far from center of disk the head is.
      */
-    private int diskHeadLocation;
+    private int headTrack;
+    
+    // Some approximations
+    public static final int RPM_7200 = 7865;
 
     /**
      * Represents where the original north-point of the disk is now.
-     *
+     * 
      * NORTH = 0
      * WEST = Short.MIN_VALUE / 2
      * SOUTH = Short.MIN_VALUE or SHORT.MAX_VALUE 
      * EAST = Shot.MAX_VALUE / 2
      */
-    private short diskNorthAngle;
+    private short angle;
 
     /**
-     * Angular speed, represents 1 diskNorthAngle per millisecond
+     * Angular speed, represents 1 angle per millisecond
      */
-    private int diskSpeed;
+    private int speed;
 
     /**
      * Effectively represents the radius (track)
      */
-    private final int maxDiskHeadLocation;
-    private final int maxDiskSpeed;
+    private final int maxTrack;
+    private final int maxSpeed;
 
     public DiskEmulator(int diskSize, int maxDiskSpeed) {
-        this.maxDiskHeadLocation = diskSize;
-        this.maxDiskSpeed = maxDiskSpeed;
+        this.maxTrack = diskSize;
+        this.maxSpeed = maxDiskSpeed;
 
-        this.diskNorthAngle = 0;
-        this.diskHeadLocation = 0;
-        this.diskSpeed = 0;
-    }
-
-    public int getMaxDiskHeadLocation() {
-        return this.maxDiskHeadLocation;
+        this.angle = 0;
+        this.headTrack = 0;
+        this.speed = 0;
     }
 
     /**
@@ -52,40 +51,44 @@ public class DiskEmulator {
      * @param diskSpeed
      */
     public void setDiskSpeed(int diskSpeed) {
-        if (diskSpeed > this.maxDiskSpeed) {
+        if (diskSpeed > this.maxSpeed) {
             throw new IllegalArgumentException("disk speed > max speed");
         }
 
-        this.diskSpeed = diskSpeed;
+        this.speed = diskSpeed;
+    }
+    
+    public void setMaxDiskSpeed() {
+        this.setDiskSpeed(this.maxSpeed);
     }
 
     protected int getDiskSpeed() {
-        return this.diskSpeed;
+        return this.speed;
     }
 
-    protected int getDiskHeadLocation() {
-        return this.diskHeadLocation;
+    protected int getHeadTrack() {
+        return this.headTrack;
     }
 
-    protected int getDiskNorthAngle() {
-        return this.diskNorthAngle;
+    protected int getAngle() {
+        return this.angle;
     }
 
-    protected void setDiskNorthAngle(short diskNorthAngle) {
-        this.diskNorthAngle = diskNorthAngle;
+    protected void setAngle(short angle) {
+        this.angle = angle;
     }
 
-    protected long setDiskHeadLocation(int location) {
+    protected long setHeadTrack(int location) {
         if (location < 0) {
             throw new IllegalArgumentException("offset cannot be less than zero");
         }
 
-        if (location > this.getMaxDiskHeadLocation()) {
+        if (location > this.maxTrack) {
             throw new IndexOutOfBoundsException("offset greater than disk size");
         }
 
         long delay = this.diskHeadDelay(location);
-        this.diskHeadLocation = location;
+        this.headTrack = location;
 
         this.applyDiskRotation(delay);
 
@@ -100,7 +103,7 @@ public class DiskEmulator {
      * @return
      */
     protected long diskHeadDelay(int location) {
-        return (this.getDiskHeadLocation() - location) * 4;
+        return (this.getHeadTrack() - location) * 4;
     }
 
     /**
@@ -109,7 +112,7 @@ public class DiskEmulator {
      * @param delay
      */
     protected void applyDiskRotation(long delay) {
-        this.setDiskNorthAngle((short) (this.getDiskNorthAngle()
+        this.setAngle((short) (this.getAngle()
                 + this.getDiskSpeed() * delay));
     }
 
@@ -120,7 +123,7 @@ public class DiskEmulator {
      * @return
      */
     protected long seekDiskSector(int sector) {
-        if (this.getDiskHeadLocation() != this.getDiskHeadLocationForSector(sector)) {
+        if (this.getHeadTrack() != this.getTrackForSector(sector)) {
             throw new IllegalStateException(
                     "cannot seek for sector if head is not on correct track"
             );
@@ -143,7 +146,7 @@ public class DiskEmulator {
      */
     protected int getLowestSector() {
         int sectors = 0;
-        int track = this.getDiskHeadLocation();
+        int track = this.getHeadTrack();
 
         for (int trackI = 0; trackI < track; trackI++) {
             sectors += trackI + 8;
@@ -158,7 +161,7 @@ public class DiskEmulator {
      * @param sector
      * @return
      */
-    protected int getDiskHeadLocationForSector(int sector) {
+    protected int getTrackForSector(int sector) {
         int sectors = 0;
         int track = 0;
         while (sectors < sector) {
@@ -183,15 +186,15 @@ public class DiskEmulator {
         // Strategize disk head location
         long delay = 0;
 
-        delay += this.setDiskHeadAndSeekSector(sector);
-        delay += this.setDiskHeadAndSeekSector(sector + 1);
+        delay += this.setHeadTrackAndSeekSector(sector);
+        delay += this.setHeadTrackAndSeekSector(sector + 1);
 
         return delay;
     }
 
-    private long setDiskHeadAndSeekSector(int sector) {
-        return this.setDiskHeadLocation(
-                this.getDiskHeadLocationForSector(sector)
+    private long setHeadTrackAndSeekSector(int sector) {
+        return this.setHeadTrack(
+                this.getTrackForSector(sector)
         ) + this.seekDiskSector(sector);
     }
 }
