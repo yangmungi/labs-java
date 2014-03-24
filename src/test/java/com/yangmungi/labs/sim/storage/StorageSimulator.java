@@ -6,6 +6,6 @@ package com.yangmungi.labs.sim.storage;
  */
 public class StorageSimulator {
     public static void main(String[] args) {
-        System.out.println((short)(32767 + 2));
+        DiskEmulator d = new DiskEmulator(1200, 5400);
     }
 }
