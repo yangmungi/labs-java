@@ -11,15 +11,17 @@ public class DiskEmulator {
      * Represents how far from center of disk the head is.
      */
     private int headTrack;
-    
+
     // Some approximations
+    // 7200/60/1000*2^16 = 7864.32
+    // diskAngles / milli for 7200 RPM
     public static final int RPM_7200 = 7865;
 
     /**
      * Represents where the original north-point of the disk is now.
-     * 
-     * NORTH = 0
-     * WEST = Short.MIN_VALUE / 2
+     *
+     * NORTH = 0 
+     * WEST = Short.MIN_VALUE / 2 
      * SOUTH = Short.MIN_VALUE or SHORT.MAX_VALUE 
      * EAST = Shot.MAX_VALUE / 2
      */
@@ -57,7 +59,7 @@ public class DiskEmulator {
 
         this.speed = diskSpeed;
     }
-    
+
     public void setMaxDiskSpeed() {
         this.setDiskSpeed(this.maxSpeed);
     }
@@ -70,7 +72,7 @@ public class DiskEmulator {
         return this.headTrack;
     }
 
-    protected int getAngle() {
+    protected short getAngle() {
         return this.angle;
     }
 
@@ -133,7 +135,8 @@ public class DiskEmulator {
         int lowestSector = this.getLowestSector();
 
         // Figure out what the angle of the disk has to be
-        short diskAngle = 0;
+        short diskAngle = this.getAngle();
+        int trackSectorOffset = sector - lowestSector;
 
         // Calculate time based off current angle and RPM of 
         return 1000L;
@@ -142,14 +145,14 @@ public class DiskEmulator {
     /**
      * Gets the lowest available sector on our current track.
      *
-     * @return
+     * @return lowest sector available on current track
      */
     protected int getLowestSector() {
         int sectors = 0;
         int track = this.getHeadTrack();
 
         for (int trackI = 0; trackI < track; trackI++) {
-            sectors += trackI + 8;
+            sectors += this.getSectorsForTrack(trackI);
         }
 
         return sectors;
@@ -159,18 +162,23 @@ public class DiskEmulator {
      * A.K.A. get Track sector is in
      *
      * @param sector
-     * @return
+     * @return track for given sector
      */
     protected int getTrackForSector(int sector) {
         int sectors = 0;
         int track = 0;
+        
         while (sectors < sector) {
-            sectors += 8 + track;
+            sectors += this.getSectorsForTrack(track);
             track++;
         }
         track -= 1;
 
         return track;
+    }
+    
+    protected int getSectorsForTrack(int track) {
+        return 8 + track;
     }
 
     /**
