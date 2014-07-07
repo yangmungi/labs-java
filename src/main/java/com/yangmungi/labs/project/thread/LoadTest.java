@@ -13,16 +13,27 @@ public class LoadTest {
 
     public static void main(String[] args) {
         Random random = new Random();
-        Map<Integer, Double> map = new ConcurrentHashMap<Integer, Double>();
 
         System.out.println("Start");
 
+        Set<Thread> globalThreads = new HashSet<Thread>();
+
+        //
+        Identifier identifier = new Identifier();
+        Thread identifierThread = new Thread();
+
+        globalThreads.add(identifierThread);
+
+        identifierThread.start();
+
+        //
         Set<Thread> threads = new HashSet<Thread>();
         for (int i = 0; i < 5000; i++) {
-            Creator creator = new Creator(random, map);
+            Creator creator = new Creator(identifier, random);
             Thread thread = new Thread(creator);
-
             threads.add(thread);
+
+            globalThreads.add(thread);
         }
 
         System.out.println("Spawned");
@@ -34,14 +45,14 @@ public class LoadTest {
         System.out.println("Started");
 
         try {
-            for (Thread thread : threads) {
+            for (Thread thread : globalThreads) {
                 thread.join();
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        System.out.println(map.size());
+        System.out.println(identifier.getSequenceMap());
         System.out.println("Done");
     }
 }
