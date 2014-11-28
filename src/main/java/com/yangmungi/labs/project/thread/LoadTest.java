@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Created by Yangmun on 7/5/2014.
@@ -12,37 +14,61 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LoadTest {
 
     public static void main(String[] args) {
-        Random random = new Random();
+        call();
+    }
 
-        System.out.println("Start");
+    public static void call() {
+
+    }
+
+    public static void thread() {
+        Random random = new Random();
 
         Set<Thread> globalThreads = new HashSet<Thread>();
 
-        //
-        Identifier identifier = new Identifier();
-        Thread identifierThread = new Thread();
+        // @todo load increaser
+        Identifier identifier = new Identifier(new ConcurrentHashMap<String, Integer>());
 
-        globalThreads.add(identifierThread);
-
-        identifierThread.start();
-
-        //
+        // @todo thread manager
         Set<Thread> threads = new HashSet<Thread>();
-        for (int i = 0; i < 5000; i++) {
-            Creator creator = new Creator(identifier, random);
-            Thread thread = new Thread(creator);
-            threads.add(thread);
+        int threadCount = 0;
 
-            globalThreads.add(thread);
+        int finishedCount = 0;
+        int threadCap = 200;
+        int neededCount = 15000;
+
+        while (finishedCount < neededCount) {
+            if (threadCount < threadCap) {
+                Creator creator = new Creator(identifier, random);
+                creator.setModMax(100);
+
+                Thread thread = new Thread(creator);
+                threads.add(thread);
+
+                globalThreads.add(thread);
+
+                threadCount++;
+            }
+
+            for (Thread thread : threads) {
+                final Thread.State state = thread.getState();
+                if (state.equals(Thread.State.NEW)) {
+                    thread.start();
+                } else if (state.equals(Thread.State.TERMINATED)) {
+                    finishedCount++;
+                    threadCount--;
+                    globalThreads.remove(thread);
+                }
+            }
+
+            try {
+                for (Thread thread : globalThreads) {
+                    thread.join(10);
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
-
-        System.out.println("Spawned");
-
-        for (Thread thread : threads) {
-            thread.start();
-        }
-
-        System.out.println("Started");
 
         try {
             for (Thread thread : globalThreads) {
@@ -52,7 +78,7 @@ public class LoadTest {
             e.printStackTrace();
         }
 
-        System.out.println(identifier.getSequenceMap());
+        System.out.println(identifier.getSuccessRatio());
         System.out.println("Done");
     }
 }

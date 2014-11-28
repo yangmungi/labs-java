@@ -2,13 +2,14 @@ package com.yangmungi.labs.project.thread;
 
 import java.util.NavigableSet;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentNavigableMap;
 
 /**
  * Created by Yangmun on 7/6/2014.
  */
-public class Bus {
+public class Bus implements Callable {
     // maybe extend instead of compose, or extend then compose
     private final ConcurrentMap<Object, Expiry> messageBus;
 
@@ -46,5 +47,10 @@ public class Bus {
 
     public boolean containsValue(Object value) {
         return messageBus.containsValue(new Expiry(value));
+    }
+
+    @Override
+    public Object call() throws Exception {
+        return null;
     }
 }
