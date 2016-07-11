@@ -1,6 +1,7 @@
 package com.yangmungi.labs.sim.futurebit;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by Yangmun on 7/10/2016.
@@ -25,7 +26,6 @@ public class BitPredictor {
 
         int[] truePredictions = new int[length];
         int[] falsePredictions = new int[length];
-
 
         for (int subLength = 1; subLength <= length; subLength++) {
             final int from = length - subLength;
@@ -73,31 +73,41 @@ public class BitPredictor {
         // could save time by summing without saving all counts but I'm not actually
         // entirely sure if that's what I want to do
         int totalTrueCount = 0;
-        for (int i = 0; i < truePredictions.length; i++) {
-            int trueCount = truePredictions[i];
-            //totalTrueCount += (trueCount + 1) * (i + 1);
-            totalTrueCount += (trueCount + 1);
-        }
-
         int totalFalseCount = 0;
-        for (int i = 0; i < falsePredictions.length; i++) {
+
+        for (int i = 0; i < length; i++) {
+//            int multiplier = i + 1;
+            int trueCount = truePredictions[i];
+
+//            totalTrueCount += (trueCount + 1) * multiplier;
+            totalTrueCount += (trueCount + 1);
+
             int falseCount = falsePredictions[i];
-            //totalFalseCount += (falseCount + 1) * (i + 1);
+//            totalFalseCount += (falseCount + 1) * multiplier;
             totalFalseCount += (falseCount + 1);
         }
 
         final int totalCount = totalTrueCount + totalFalseCount;
         final int nextNumber = random.nextInt(totalCount);
-        return nextNumber < totalTrueCount;
+        return nextNumber < totalFalseCount;
     }
 
     public static void main(String[] args) {
         final Random random = new Random(100);
         final BitPredictor predictor = new BitPredictor(random);
 
+        final AtomicInteger counterMessage = new AtomicInteger(0);
+        final Timer timer = new Timer(true);
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                System.out.println("Processed:" + counterMessage);
+            }
+        }, 0L, 1000L);
+
         int correct = 0, incorrect = 0;
         boolean predicted = false;
-        for (int i = 0; i < 3000; i++) {
+        for (int i = 0; i < 4000; i++) {
             final boolean inputBoolean = random.nextBoolean();
             if (predicted != inputBoolean) {
                 incorrect++;
@@ -106,12 +116,12 @@ public class BitPredictor {
             }
 
             predicted = predictor.getNextBoolean(inputBoolean);
-            if (i % 1000 == 0) {
-                System.out.println(i);
-            }
-            //System.out.println(predicted);
+
+            counterMessage.lazySet(i);
         }
 
-        System.out.println("Correct:" + correct + "; Incorrect:" + incorrect);
+        System.out.println("=============");
+        System.out.println("Correct:" + correct);
+        System.out.println("Incorrect:" + incorrect);
     }
 }
