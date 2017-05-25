@@ -1,0 +1,258 @@
+
++++-- 3 = IMPOSSIBLE?
++--+-
+-+++-
+
+---+-++- 3 -> 3
+8 total
+3 +
+5 -
+5 possible moves
+3 1 1 2 1
+
+-+-+- 4
+5 total
+2 +
+3 -
+
+
+               - + - + - +
+---+-++- 5/3 : 3 1 1 2 1
+++++-++- 2/6 : 0 4 1 2 1
+Remove "Easy"
++-++- : 0 1 1 2 1
+++--- : 0 2 3
++++++
+++
+
+- + - +
+0 1 1 2
+
+aAaA
+
+1 k-1 1
+
+aAaAa
+1 1 1 1 1
+AaAAa
+0 1 1 2 1
+
+aAAa
+1 2 1 
+why solvable?
+
+last one is always + next
+e.g. 
+AaAAaa
+0 1 1 2 2
+unless splitting one
+
+AAaAAA
++ 2 4
++ 2 1
+
+A unsolve
+AA unsolve
+AAA easy
+AAAA 2
+AAAA 2 + 1 + 1 + 1
+AAAA -
+aaaA 0
+aAAa 01
+Aaaa 010 
+Aaaa 1 == 010 -> never backtrack? 
+
+AAAAA -
+aaaAA 0   - 3 2
+aAAaA 01  - 1 2 1 1
+aaAaa 02  - 2 1 2
+aAaAa 012 - 1 1 1 1
+
+- 1 2 1 1
++ 1 3 1
+- 3 1
++ 1
+OK
+
+K = 4
+
+AAAA = reduce
+
+AAAAA 
+aaaaA 0
+Aaaaa 1
+aAAAa 01 == 10
+
+AAAAAAA
+aaaaAAA 0
+aAAAaAA 01
+aaAAaaA 02
+aaaAaaa 03
+aAaaAaA 012
+aAAaAaa 013
+aaAaAAa 023
+aAaAaAa 0123
+
+aAaaAaA 012
+AaAAAaA 0120
+
+aAAAaA ?= 01
+AAAAAA
+aaaaAA 0
+aAAAaA 01 -> true
+
+aAAaAaa 013
+
+---+-++- 5/3 : 3 1 1 2 1
+aaaAaAAa
+aaaAaAAa
+
+aaaAaAAa
+AAAAaAAa 1 
+AaAAa
+AAaaa 2
+AAAAA 3
+
+AaAAaaaa
+aAAaaaa 1
+Aaaaaaa
+aaaaaa
+AAAaaa 2
+aaa
+AAA 3
+OK
+
+AaAAaaaa
+AAaaaaaa 1
+AAAAAaaa 2
+AAAAAAAA 3
+
+AaAAaaaa
+AaAAaAAA
+AaaaA
+AAAAA
+
+0 K
+K 0
+
+// not solvable
+N (K-N)
+(K-N) N
+
+-++-
+1 (k-1) 1
+0 1 k
+
+// max search space is 2 * k - 1 
+
+2^1999 still too big with k = 1000
+
+but it's not really 2^1999
+it's 2^999, which is still too big...
+
+AAAAAA
+
+AAA -> 0
+Aaaa
+1 (k-1) 1
+
+0 1 1 k-1 1
+
+AaAAa
+
+-++-+ : 1 2 1 1
++--+- : 0 1 2 1 1
+
+AaaAa : 0 1 2 1 1
+Aaaaa
+
+AaaaAAaa
+AAAAAAaa
+AAAaa
+
+-+-+--+- : 1 1 1 1 2 1 1
++-++--+-
+++----+-
++++++-+-
+++-+-
++++-+
++--++
+-+-++
+
+-+-+--+-
+aAaAaaAa
+AaAAaaAa
+AaAAaAaA
+AAaaaAaA
+AAaaAaAA
+AAAAaaAA
+AAAaAAAA
+
+-+-+--+-
+aAaAaaAa
+aAaAAAaa
+aAaAAaAA
+AaAAAaAA
+AAaaAaAA
+AAaaaAaA
+AAAAAAaA
+
+First test hypothesis involving counts of + and -
+
+----+++- 5/3
++++-+++- 2/6
+++++--+- 3/5
+
+         - + - + - + - 
+-+-+-++- 1 1 1 1 1 2 1
++-++-++- 0 1 1 2 1 2 1
+++---++- 0 2 3 2 1
++++++++- 0 7 1
+
+I don't think there's only a brute force solution...
+
+++++-++-
+
+-++++ 1/4
++---+ 3/2
+++++- 1/4
+
+====
+
+10 -> 9
+910 -> 899
+1910 -> 1899
+
+110 -> 99
+ 0
+ 1 > 0 => 9
+ 1 = 1 && prev => 9
+ 1 
+
+3120 -> 2999
+ 0
+ 2 > 0 => 9
+ 1 < 2 & pg => 1
+ 3 > 1 & pl => ?
+ 3 & pg => 2
+
+1210 -> 
+ 0
+ 1 > 0 => 9
+ 2 > 1 => 9
+ 1 < 2 && prevg => 1
+ 1 && prevl => 1
+
+3210 -> 
+ 0
+ 1 > 0 => 9
+ 2 > 1 => 9
+ 3 > 2 => 9
+
+12390 -> 12389
+
+13243 -> 12999
+19899 -> 18999
+
+1879802 -> 
+1799999

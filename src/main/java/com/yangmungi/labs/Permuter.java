@@ -95,7 +95,7 @@ public class Permuter {
     }
     
     /**
-     * Returns all possible permutations of a List consisting of
+     * Returns all possible permutations of a ListOperator consisting of
      *  the objects from Collection origin
      */
     public void execute() {

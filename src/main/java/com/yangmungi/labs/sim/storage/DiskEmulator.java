@@ -86,7 +86,7 @@ public class DiskEmulator {
         }
 
         if (location > this.maxTrack) {
-            throw new IndexOutOfBoundsException("offset greater than disk size");
+            throw new IndexOutOfBoundsException("offset greater than disk getStatistic");
         }
 
         long delay = this.diskHeadDelay(location);
