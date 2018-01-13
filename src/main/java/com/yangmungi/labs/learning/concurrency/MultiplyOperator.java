@@ -10,6 +10,7 @@ public class MultiplyOperator implements SingleOperator<Integer, Integer, Multip
 
     private final AtomicInteger operateCounter = new AtomicInteger();
     private final AtomicInteger undoCounter = new AtomicInteger();
+    private final AtomicInteger skipCounter = new AtomicInteger();
 
     @Override
     public Integer getContainer() {
@@ -18,9 +19,12 @@ public class MultiplyOperator implements SingleOperator<Integer, Integer, Multip
 
     @Override
     public void operate(Integer integer) {
-        if (container < Integer.MAX_VALUE) {
-            container *= (integer + 1);
+        int result = container * (integer + 1);
+        if (result > 0) {
+            container = result;
             operateCounter.incrementAndGet();
+        } else {
+            skipCounter.incrementAndGet();
         }
     }
 
@@ -37,18 +41,23 @@ public class MultiplyOperator implements SingleOperator<Integer, Integer, Multip
 
     @Override
     public Statistic getStatistic() {
-        return new Statistic(container, undoCounter, operateCounter);
+        int undoCount = undoCounter.get();
+        int operateCount = operateCounter.get();
+        int skipCount = skipCounter.get();
+        return new Statistic(container, undoCount, operateCount, skipCount);
     }
 
     static class Statistic {
         public final int container;
         public final int undoCounter;
         public final int operateCounter;
+        public final int skipCount;
 
-        public Statistic(int container, AtomicInteger undoCounter, AtomicInteger operateCounter) {
+        public Statistic(int container, int undoCount, int operateCount, int skipCount) {
             this.container = container;
-            this.undoCounter = undoCounter.get();
-            this.operateCounter = operateCounter.get();
+            this.undoCounter = undoCount;
+            this.operateCounter = operateCount;
+            this.skipCount = skipCount;
         }
 
         @Override
@@ -57,6 +66,7 @@ public class MultiplyOperator implements SingleOperator<Integer, Integer, Multip
                     "container=" + container +
                     ", undoCounter=" + undoCounter +
                     ", operateCounter=" + operateCounter +
+                    ", skipCount=" + skipCount +
                     '}';
         }
     }

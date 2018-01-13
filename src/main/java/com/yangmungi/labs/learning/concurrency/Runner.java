@@ -1,7 +1,6 @@
 package com.yangmungi.labs.learning.concurrency;
 
 import java.io.PrintStream;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -55,24 +54,24 @@ public class Runner {
 
     }
 
-    private static <T, R, S> void operateAndPrint(SingleOperator<T, R, S> integerList, R finalI, String descriptor) {
+    private static <T, R, S> void operateAndPrint(SingleOperator<T, R, S> singleOperator, R finalI, String descriptor) {
         final Thread thread = Thread.currentThread();
 
         S stat;
-        stat = integerList.getStatistic();
+        stat = singleOperator.getStatistic();
         final String prefix = thread + ":" + finalI + " " + descriptor;
         System.out.println(prefix + "-pre:" + stat);
 
-        integerList.operate(finalI);
+        singleOperator.operate(finalI);
 
-        stat = integerList.getStatistic();
+        stat = singleOperator.getStatistic();
         System.out.println(prefix + "-operate:" + stat);
 
-        final R removed = integerList.undo();
+        final R removed = singleOperator.undo();
 
-        stat = integerList.getStatistic();
+        stat = singleOperator.getStatistic();
         System.out.println(prefix + "-remove:" + stat + " r:" + removed);
 
-        integerList.operate(finalI);
+        singleOperator.operate(finalI);
     }
 }
