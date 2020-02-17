@@ -85,11 +85,16 @@ public class BitPredictor {
             int falseCount = falsePredictions[i];
 //            totalFalseCount += (falseCount + 1) * multiplier;
             totalFalseCount += (falseCount + 1);
+
+            System.out.print("(" + i + " T:" + trueCount + " F:" + falseCount + ")");
         }
 
-        final int totalCount = totalTrueCount + totalFalseCount;
-        final int nextNumber = random.nextInt(totalCount);
-        return nextNumber < totalFalseCount;
+
+        // resolution
+//        final int totalCount = totalTrueCount + totalFalseCount;
+//        final int nextNumber = random.nextInt(totalCount);
+//        return nextNumber < totalFalseCount;
+        return totalFalseCount < totalTrueCount;
     }
 
     public static void main(String[] args) {
@@ -98,22 +103,26 @@ public class BitPredictor {
 
         final AtomicInteger counterMessage = new AtomicInteger(0);
         final Timer timer = new Timer(true);
-        timer.scheduleAtFixedRate(new TimerTask() {
+        TimerTask printer = new TimerTask() {
             @Override
             public void run() {
                 System.out.println("Processed:" + counterMessage);
             }
-        }, 0L, 1000L);
+        };
+
+        //timer.scheduleAtFixedRate(printer, 0L, 1000L);
 
         int correct = 0, incorrect = 0;
         boolean predicted = false;
-        for (int i = 0; i < 4000; i++) {
+        for (int i = 0; i < 100; i++) {
             final boolean inputBoolean = random.nextBoolean();
             if (predicted != inputBoolean) {
                 incorrect++;
             } else {
                 correct++;
             }
+
+            System.out.println("P:" + predicted + " I:" + inputBoolean);
 
             predicted = predictor.getNextBoolean(inputBoolean);
 
