@@ -1,10 +1,8 @@
-package com.yangmungi.labs.project.thread;
+package com.yangmungi.labs.sim.thread;
 
-import java.util.NavigableSet;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ConcurrentNavigableMap;
 
 /**
  * Created by Yangmun on 7/6/2014.

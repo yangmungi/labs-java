@@ -1,4 +1,4 @@
-package com.yangmungi.labs.project.thread;
+package com.yangmungi.labs.sim.thread;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentMap;

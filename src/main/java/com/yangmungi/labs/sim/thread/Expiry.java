@@ -1,7 +1,6 @@
-package com.yangmungi.labs.project.thread;
+package com.yangmungi.labs.sim.thread;
 
 import java.util.Calendar;
-import java.util.Date;
 
 /**
  * Created by Yangmun on 7/6/2014.

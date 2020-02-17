@@ -1,12 +1,9 @@
-package com.yangmungi.labs.project.thread;
+package com.yangmungi.labs.sim.thread;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
 
 /**
  * Created by Yangmun on 7/5/2014.
